@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vídeos Maratona Tech 2025</title>
+    <style>
+        /* Estilo para o fundo bicolor: azul escuro (#000080) e azul claro (#ADD8E6) */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* Fundo com gradiente linear */
+            background: linear-gradient(to bottom, #000080 0%, #ADD8E6 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        header {
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.9); /* Fundo claro semi-transparente para destaque */
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #000080; /* Azul escuro */
+            margin: 10px 0;
+            font-size: 1.8em;
+        }
+
+        .icones {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .icones img {
+            height: 60px; /* Tamanho dos ícones */
+            width: 60px;
+            object-fit: contain; /* Garante que a imagem se ajuste sem distorção */
+            margin: 0 20px;
+            border-radius: 50%;
+            border: 2px solid #000080;
+        }
+
+        main {
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.95); /* Fundo branco para o conteúdo principal */
+            border-radius: 10px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+            margin: 20px;
+            width: 90%;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        #videoContainer {
+            margin-bottom: 20px;
+        }
+
+        #currentVideo {
+            width: 100%;
+            height: auto;
+            max-height: 500px; /* Limite a altura para telas maiores */
+            border-radius: 8px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            background-color: black;
+            cursor: pointer; /* Indica que o player pode ser clicado para play/pause */
+        }
+
+        #videoTitle {
+            margin-top: 15px;
+            color: #000080;
+            font-size: 1.4em;
+            min-height: 30px; /* Garante espaço mesmo sem título */
+        }
+
+        h2 {
+            color: #000080;
+            border-bottom: 2px solid #ADD8E6;
+            padding-bottom: 5px;
+        }
+
+        /* Estilo para a lista de reprodução */
+        #playlist {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        #playlist li {
+            background-color: #E0FFFF; /* Azul muito claro */
+            color: #000080;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 6px;
+            text-align: left;
+            transition: background-color 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #playlist li:hover {
+            background-color: #B0E0E6;
+        }
+
+        #playlist li.active {
+            background-color: #000080;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .status {
+            font-size: 0.9em;
+            color: #4682B4; /* Azul aço para status */
+        }
+        
+        .active .status {
+            color: #E0FFFF; /* Azul claro para o status ativo */
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="icones">
+            <img src="download.jpg" alt="Ícone CCM Semiramis de Barros Braga">
+            <h1>Vídeos Maratona Tech 2025</h1>
+            <img src="307617.ff82716f.160x160o.ac0c452e6ba3.png" alt="Ícone Maratona Tech">
+        </div>
+    </header>
+
+    <main>
+        <h2>Vídeo em Exibição</h2>
+        <div id="videoContainer">
+            <video id="currentVideo" controls poster="maratona_tech_icone_capa.png"></video> 
+            <p id="videoTitle">Pressione o botão Play acima para iniciar o primeiro vídeo.</p>
+        </div>
+
+        <h2>Lista de Vídeos</h2>
+        <ul id="playlist">
+            </ul>
+    </main>
+
+    <script>
+        // Array com todos os 7 vídeos anexados
+        const videos = [
+            { src: "VIDEO-2025-10-17-21-01-21.mp4", title: "Vídeo 1: Wireframe de Aplicativo" },
+            { src: "VIDEO-2025-10-19-14-25-22.mp4", title: "Vídeo 2: Fluxograma de Robô Guardião" },
+            { src: "VIDEO-2025-10-18-18-23-16.mp4", title: "Vídeo 3: Apresentação de Dashboard (TechShare)" },
+            { src: "VIDEO-2025-10-18-16-54-19.mp4", title: "Vídeo 4: Apresentação do Fluxograma (Eco Guardião)" },
+            { src: "VIDEO-2025-10-17-21-01-31.mp4", title: "Vídeo 5: Protótipo de App (Design e Fluxo)" },
+            { src: "VIDEO-2025-10-16-21-10-56.mp4", title: "Vídeo 6: Demonstração de Solução IoT" },
+            { src: "VIDEO-2025-10-18-15-37-43.mp4", title: "Vídeo 7: Pitch Final do Projeto (Resumo)" }
+        ];
+
+        let currentVideoIndex = 0;
+        const videoPlayer = document.getElementById('currentVideo');
+        const videoTitle = document.getElementById('videoTitle');
+        const playlistElement = document.getElementById('playlist');
+
+        // Função principal para carregar um vídeo
+        function loadVideo(index) {
+            if (index >= 0 && index < videos.length) {
+                currentVideoIndex = index;
+                videoPlayer.src = videos[currentVideoIndex].src;
+                videoTitle.textContent = videos[currentVideoIndex].title;
+                updatePlaylistDisplay();
+                
+                // Nota: O vídeo não é iniciado automaticamente. 
+                // O usuário DEVE clicar no botão Play do player (controls) para atender ao requisito: 
+                // "assisitr os vídoes anexados um por vez a cada clique no play do vídeo."
+            }
+        }
+
+        // Função para atualizar a lista de reprodução visualmente
+        function updatePlaylistDisplay() {
+            playlistElement.innerHTML = ''; // Limpa a lista
+            videos.forEach((video, index) => {
+                const li = document.createElement('li');
+                
+                // Texto do item da lista
+                const titleSpan = document.createElement('span');
+                titleSpan.textContent = video.title;
+                li.appendChild(titleSpan);
+
+                const statusSpan = document.createElement('span');
+                statusSpan.classList.add('status');
+                
+                if (index === currentVideoIndex) {
+                    li.classList.add('active');
+                    statusSpan.textContent = "(Em Reprodução)";
+                } else if (index < currentVideoIndex) {
+                    statusSpan.textContent = "(Visto)";
+                    li.classList.add('finished'); // Opcional para estilização de vídeos já vistos
+                } else {
+                    statusSpan.textContent = "(Clique para carregar)";
+                    // Permite clicar nos próximos da lista para carregar o vídeo no player
+                    li.onclick = () => loadVideo(index);
+                }
+
+                li.appendChild(statusSpan);
+                playlistElement.appendChild(li);
+            });
+        }
+
+        // FUNÇÃO CRUCIAL: Ir para o próximo vídeo após o término do atual
+        // Este evento atende ao fluxo de "Maratona", mas ainda exige o PLAY no próximo.
+        // Se a intenção for iniciar **automaticamente** o próximo, descomente a linha videoPlayer.play()
+        videoPlayer.addEventListener('ended', () => {
+            currentVideoIndex++;
+            if (currentVideoIndex < videos.length) {
+                loadVideo(currentVideoIndex);
+                videoTitle.textContent = `VÍDEO CONCLUÍDO. Pressione Play para o próximo: ${videos[currentVideoIndex].title}`;
+                // videoPlayer.play(); // Descomente esta linha para reprodução automática (Autoplay)
+            } else {
+                videoTitle.textContent = "Fim da Maratona de Vídeos! Parabéns!";
+                videoPlayer.src = ""; // Limpa o player
+                updatePlaylistDisplay();
+            }
+        });
+        
+        // Adiciona um listener para atualizar o título quando o usuário clica em Play
+        videoPlayer.addEventListener('play', () => {
+             videoTitle.textContent = videos[currentVideoIndex].title + " (Assistindo agora...)";
+        });
+        videoPlayer.addEventListener('pause', () => {
+             videoTitle.textContent = videos[currentVideoIndex].title + " (Em Pausa)";
+        });
+
+
+        // Inicia a página carregando o primeiro vídeo
+        loadVideo(0);
+
+    </script>
+</body>
+</html>
